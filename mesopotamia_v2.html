@@ -1,0 +1,2389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Between Two Rivers — Daily Life in Ancient Mesopotamia</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --clay: #c8874a;
+  --clay-light: #d9a070;
+  --sand: #e8c98a;
+  --dark-earth: #1e0f05;
+  --deep-brown: #5a3018;
+  --gold: #d4a017;
+  --gold-bright: #f0c040;
+  --lapis: #1a3a6b;
+  --lapis-light: #2a5a9b;
+  --river: #2a6b8a;
+  --river-light: #4a9bb0;
+  --sky-dawn: #ff7040;
+  --sky-day: #7ab3c8;
+  --sky-night: #0a0a1e;
+  --parchment: #f5e8c8;
+  --ash: #8a7a60;
+  --burnt: #8a3a10;
+  --green: #3a6020;
+  --shadow: rgba(0,0,0,0.7);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+::selection { background: rgba(212,160,23,0.3); color: var(--parchment); }
+
+body {
+  background: var(--dark-earth);
+  color: var(--parchment);
+  font-family: 'EB Garamond', serif;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ── CUSTOM CURSOR ── */
+.cursor {
+  position: fixed;
+  width: 20px; height: 20px;
+  border: 1.5px solid var(--gold);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s, height 0.2s, border-color 0.2s, background 0.2s;
+  mix-blend-mode: difference;
+}
+.cursor-dot {
+  position: fixed;
+  width: 4px; height: 4px;
+  background: var(--gold);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  transform: translate(-50%, -50%);
+}
+body:hover .cursor { opacity: 1; }
+a:hover ~ .cursor, button:hover ~ .cursor { width: 40px; height: 40px; }
+
+/* ── GRAIN ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.5;
+}
+
+/* ── LOADING SCREEN ── */
+#loader {
+  position: fixed;
+  inset: 0;
+  background: #0a0503;
+  z-index: 9997;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s ease, visibility 0.8s;
+}
+#loader.hidden { opacity: 0; visibility: hidden; }
+.loader-glyph {
+  font-size: 4rem;
+  color: var(--gold);
+  animation: pulse 1.5s ease-in-out infinite;
+  margin-bottom: 1.5rem;
+}
+.loader-text {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.5em;
+  color: rgba(245,232,200,0.3);
+  text-transform: uppercase;
+  animation: fadeInOut 1.5s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{transform:scale(1);opacity:0.6} 50%{transform:scale(1.1);opacity:1} }
+@keyframes fadeInOut { 0%,100%{opacity:0.3} 50%{opacity:0.8} }
+
+/* ── HERO ── */
+.hero {
+  position: relative;
+  height: 100vh;
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Dynamic sky canvas */
+#skyCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+}
+
+/* Parallax layers */
+.parallax-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hero-mountains {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 55%;
+  will-change: transform;
+}
+
+.hero-city {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 45%;
+  will-change: transform;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 20;
+  text-align: center;
+  padding: 2rem;
+  will-change: transform;
+}
+
+.hero-eyebrow {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(0.6rem, 1.2vw, 0.8rem);
+  letter-spacing: 0.6em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeDown 1s 0.5s ease-out forwards;
+}
+
+.hero-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(2rem, 7vw, 6rem);
+  line-height: 1.05;
+  color: var(--sand);
+  text-shadow: 0 0 80px rgba(212,160,23,0.4), 0 4px 20px rgba(0,0,0,0.9);
+  margin-bottom: 0.75rem;
+  opacity: 0;
+  animation: fadeDown 1s 0.7s ease-out forwards;
+}
+
+.hero-title span {
+  display: block;
+  font-size: 0.55em;
+  color: var(--clay-light);
+  letter-spacing: 0.05em;
+}
+
+.hero-subtitle {
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: clamp(1rem, 2vw, 1.35rem);
+  color: rgba(245,232,200,0.65);
+  margin-bottom: 2.5rem;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+  opacity: 0;
+  animation: fadeDown 1s 0.9s ease-out forwards;
+}
+
+.hero-badges {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: fadeDown 1s 1.1s ease-out forwards;
+}
+
+.hero-badge {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: rgba(245,232,200,0.5);
+  padding: 0.5rem 1.5rem;
+  border: 1px solid rgba(200,135,74,0.25);
+  background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(4px);
+  cursor: default;
+  transition: all 0.3s;
+}
+.hero-badge:hover {
+  color: var(--gold);
+  border-color: rgba(212,160,23,0.5);
+  background: rgba(212,160,23,0.08);
+}
+
+@keyframes fadeDown {
+  from { opacity:0; transform:translateY(-20px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+/* Sand particles canvas */
+#particleCanvas {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Scroll indicator */
+.scroll-indicator {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0;
+  animation: fadeIn 1s 1.8s ease-out forwards;
+}
+@keyframes fadeIn { to { opacity: 1; } }
+.scroll-line {
+  width: 1px;
+  height: 50px;
+  background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+@keyframes scrollPulse {
+  0%,100% { transform:scaleY(1); opacity:0.4; }
+  50% { transform:scaleY(1.2); opacity:1; }
+}
+.scroll-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.4em;
+  color: rgba(245,232,200,0.3);
+  text-transform: uppercase;
+}
+
+/* ── NAV ── */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 500;
+  background: rgba(10,5,2,0.9);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(200,135,74,0.15);
+}
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+}
+.nav-logo {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.85rem;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  padding: 1.2rem 0;
+}
+.nav-links {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  gap: 0;
+}
+.nav-links::-webkit-scrollbar { display: none; }
+.nav-link {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(245,232,200,0.4);
+  text-decoration: none;
+  padding: 1.2rem 1rem;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: color 0.3s, border-color 0.3s;
+  position: relative;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 50%; right: 50%;
+  height: 2px;
+  background: var(--gold);
+  transition: left 0.3s, right 0.3s;
+}
+.nav-link:hover { color: var(--gold); }
+.nav-link:hover::after { left: 0; right: 0; }
+.nav-link.active { color: var(--gold); }
+.nav-link.active::after { left: 0; right: 0; }
+
+/* Progress bar */
+#progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  background: linear-gradient(to right, var(--clay), var(--gold));
+  z-index: 501;
+  transition: width 0.1s linear;
+  width: 0%;
+}
+
+/* ── COMMON SECTION STYLES ── */
+.section-wrap {
+  padding: 7rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.section-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 5rem;
+}
+
+.section-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.5em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.section-tag::before, .section-tag::after {
+  content: '';
+  display: block;
+  width: 30px;
+  height: 1px;
+  background: var(--gold);
+  opacity: 0.5;
+}
+
+.section-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.8rem, 4vw, 3.2rem);
+  color: var(--sand);
+  line-height: 1.15;
+  margin-bottom: 1.2rem;
+}
+
+.section-lead {
+  font-style: italic;
+  font-size: clamp(1rem, 1.8vw, 1.25rem);
+  color: var(--ash);
+  max-width: 560px;
+  margin: 0 auto;
+  line-height: 1.75;
+}
+
+/* Reveal animations */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.reveal-left.visible { opacity: 1; transform: translateX(0); }
+.reveal-right {
+  opacity: 0;
+  transform: translateX(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+/* Section dividers */
+.divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(200,135,74,0.3), transparent);
+  position: relative;
+}
+.divider::after {
+  content: '✦';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--gold);
+  font-size: 0.7rem;
+  background: var(--dark-earth);
+  padding: 0 0.5rem;
+  opacity: 0.5;
+}
+
+/* ── CLOCK / DAY SECTION ── */
+#day { background: linear-gradient(180deg, #0d0805 0%, #1a0d06 100%); }
+
+.day-clock {
+  position: relative;
+  width: 240px;
+  height: 240px;
+  margin: 0 auto 4rem;
+}
+
+.clock-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(200,135,74,0.2);
+}
+.clock-ring:nth-child(2) { inset: 12px; border-color: rgba(212,160,23,0.15); }
+.clock-ring:nth-child(3) { inset: 24px; border-color: rgba(200,135,74,0.1); }
+
+.clock-sun {
+  position: absolute;
+  width: 30px; height: 30px;
+  background: radial-gradient(circle, #ffd700, #ff8c00);
+  border-radius: 50%;
+  box-shadow: 0 0 20px rgba(255,200,0,0.8);
+  top: 50%; left: 50%;
+  transform-origin: 0 0;
+  transition: none;
+}
+
+.clock-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.clock-time-display {
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  color: var(--sand);
+}
+.clock-period {
+  font-size: 0.7rem;
+  color: var(--ash);
+  letter-spacing: 0.2em;
+  margin-top: 0.25rem;
+}
+
+.time-events {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1px;
+  background: rgba(200,135,74,0.1);
+  border: 1px solid rgba(200,135,74,0.1);
+}
+
+.time-event {
+  background: var(--dark-earth);
+  padding: 2rem;
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  cursor: pointer;
+  transition: background 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.time-event::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--gold);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.4s ease;
+}
+.time-event:hover { background: rgba(90,48,24,0.3); }
+.time-event:hover::before { transform: scaleY(1); }
+.time-event.active { background: rgba(90,48,24,0.4); }
+.time-event.active::before { transform: scaleY(1); background: var(--gold); }
+
+.event-time-badge {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  white-space: nowrap;
+  padding-top: 0.2rem;
+  min-width: 60px;
+}
+.event-icon { font-size: 1.5rem; flex-shrink: 0; }
+.event-body {}
+.event-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  color: var(--sand);
+  margin-bottom: 0.4rem;
+}
+.event-text {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: rgba(245,232,200,0.6);
+}
+
+/* ── HOME SECTION ── */
+#home { background: linear-gradient(180deg, #120a04 0%, #0d0803 100%); }
+
+.home-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.home-illustration {
+  position: relative;
+}
+
+.house-svg-wrap {
+  position: relative;
+  filter: drop-shadow(0 20px 60px rgba(0,0,0,0.8));
+}
+
+.house-glow {
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(ellipse, rgba(200,135,74,0.15), transparent 70%);
+  pointer-events: none;
+}
+
+.home-facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.fact-chip {
+  background: rgba(90,48,24,0.25);
+  border: 1px solid rgba(200,135,74,0.15);
+  padding: 1rem;
+  transition: all 0.3s;
+}
+.fact-chip:hover {
+  background: rgba(90,48,24,0.4);
+  border-color: rgba(212,160,23,0.3);
+  transform: translateY(-2px);
+}
+.fact-chip-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+.fact-chip-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  margin-bottom: 0.3rem;
+}
+.fact-chip-text {
+  font-size: 0.82rem;
+  color: rgba(245,232,200,0.55);
+  line-height: 1.5;
+}
+
+.home-text h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.5rem;
+  color: var(--sand);
+  margin-bottom: 1.2rem;
+  line-height: 1.3;
+}
+.home-text p {
+  font-size: 1.05rem;
+  line-height: 1.85;
+  color: rgba(245,232,200,0.65);
+  margin-bottom: 1rem;
+}
+
+.pull-quote {
+  border-left: 3px solid var(--gold);
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  background: rgba(212,160,23,0.06);
+  font-style: italic;
+  font-size: 1rem;
+  color: rgba(245,232,200,0.6);
+  line-height: 1.7;
+  position: relative;
+}
+.pull-quote::before {
+  content: '"';
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 4rem;
+  color: rgba(212,160,23,0.15);
+  position: absolute;
+  top: -0.5rem; left: 0.5rem;
+  line-height: 1;
+}
+
+/* ── FOOD SECTION ── */
+#food { background: linear-gradient(180deg, #0d0803 0%, #0a100a 100%); }
+
+.food-showcase {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: rgba(200,135,74,0.1);
+  border: 1px solid rgba(200,135,74,0.1);
+}
+
+.food-card {
+  background: #0a0803;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: background 0.4s;
+}
+.food-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 100%, rgba(200,135,74,0.15), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.food-card:hover { background: #120e08; }
+.food-card:hover::after { opacity: 1; }
+.food-card:hover .food-emoji { transform: scale(1.2) rotate(-5deg); }
+.food-card:hover .food-card-name { color: var(--gold); }
+
+.food-emoji {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 1rem;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.food-card-name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  color: var(--sand);
+  margin-bottom: 0.5rem;
+  transition: color 0.3s;
+}
+.food-card-desc {
+  font-size: 0.82rem;
+  color: rgba(245,232,200,0.45);
+  line-height: 1.6;
+}
+
+.recipe-banner {
+  margin-top: 3rem;
+  background: linear-gradient(135deg, rgba(90,48,24,0.3), rgba(26,58,107,0.2));
+  border: 1px solid rgba(200,135,74,0.15);
+  padding: 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+}
+.recipe-icon { font-size: 4rem; flex-shrink: 0; }
+.recipe-text h4 {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  color: var(--sand);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.05em;
+}
+.recipe-text p {
+  font-size: 0.9rem;
+  color: rgba(245,232,200,0.55);
+  line-height: 1.7;
+  font-style: italic;
+}
+
+/* ── WORK & TRADE ── */
+#work { background: linear-gradient(180deg, #0a100a 0%, #080808 100%); }
+
+.work-bento {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: auto;
+  gap: 1rem;
+}
+
+.bento-card {
+  background: rgba(20,15,10,0.8);
+  border: 1px solid rgba(200,135,74,0.12);
+  padding: 2rem;
+  transition: all 0.4s;
+  cursor: default;
+  position: relative;
+  overflow: hidden;
+}
+.bento-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 0% 0%, rgba(212,160,23,0.08), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.bento-card:hover { border-color: rgba(212,160,23,0.3); transform: translateY(-3px); }
+.bento-card:hover::before { opacity: 1; }
+
+.bento-card:nth-child(1) { grid-column: span 3; }
+.bento-card:nth-child(2) { grid-column: span 3; }
+.bento-card:nth-child(3) { grid-column: span 2; }
+.bento-card:nth-child(4) { grid-column: span 2; }
+.bento-card:nth-child(5) { grid-column: span 2; }
+.bento-card:nth-child(6) { grid-column: span 6; display: flex; gap: 2rem; align-items: center; }
+
+.bento-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+.bento-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.95rem;
+  color: var(--sand);
+  margin-bottom: 0.6rem;
+  letter-spacing: 0.05em;
+}
+.bento-text {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: rgba(245,232,200,0.55);
+}
+.bento-stat {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 2.5rem;
+  color: var(--gold);
+  opacity: 0.3;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+/* ── WRITING / CUNEIFORM ── */
+#writing { background: linear-gradient(180deg, #080808 0%, #050508 100%); }
+
+.writing-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 5rem;
+  align-items: start;
+}
+
+.tablet-3d {
+  perspective: 800px;
+}
+.tablet-inner {
+  background: linear-gradient(135deg, #c87848 0%, #a05a28 50%, #783810 100%);
+  padding: 3rem;
+  box-shadow:
+    8px 8px 0 #5a2810,
+    16px 16px 0 #3a1808,
+    0 30px 60px rgba(0,0,0,0.7);
+  position: relative;
+  transform: rotateY(-5deg) rotateX(3deg);
+  transition: transform 0.5s ease;
+  border-radius: 2px;
+}
+.tablet-inner:hover { transform: rotateY(0deg) rotateX(0deg); }
+.tablet-inner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 22px,
+    rgba(0,0,0,0.1) 22px, rgba(0,0,0,0.1) 23px
+  );
+  pointer-events: none;
+}
+.cuneiform-block {
+  font-size: 1.6rem;
+  line-height: 2;
+  color: rgba(58,32,16,0.85);
+  letter-spacing: 0.15em;
+  position: relative;
+  z-index: 1;
+  user-select: none;
+}
+.tablet-caption {
+  text-align: center;
+  margin-top: 1rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  color: var(--ash);
+}
+
+.evolution-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.evo-step {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 0;
+  border-bottom: 1px solid rgba(200,135,74,0.1);
+  transition: background 0.3s;
+}
+.evo-step:hover { background: rgba(90,48,24,0.2); }
+.evo-symbol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  font-size: 2rem;
+  border-right: 1px solid rgba(200,135,74,0.1);
+  color: var(--clay);
+}
+.evo-info { padding: 1.5rem; }
+.evo-era {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+  margin-bottom: 0.25rem;
+}
+.evo-desc {
+  font-size: 0.88rem;
+  color: rgba(245,232,200,0.55);
+  line-height: 1.5;
+}
+
+.gilgamesh-quote {
+  margin-top: 3rem;
+  padding: 3rem;
+  background: linear-gradient(135deg, rgba(26,58,107,0.25), rgba(10,5,2,0.8));
+  border: 1px solid rgba(26,58,107,0.3);
+  text-align: center;
+  position: relative;
+}
+.gilgamesh-quote::before {
+  content: '𒄑𒂗𒈦';
+  position: absolute;
+  top: 1rem; right: 1.5rem;
+  font-size: 1.5rem;
+  color: rgba(26,58,107,0.4);
+  letter-spacing: 0.2em;
+}
+.quote-text {
+  font-style: italic;
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  color: rgba(245,232,200,0.7);
+  line-height: 1.8;
+  max-width: 600px;
+  margin: 0 auto 1rem;
+}
+.quote-source {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  color: rgba(122,179,200,0.5);
+}
+
+/* ── RIVER INTERLUDE ── */
+.river-section {
+  position: relative;
+  height: 300px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #030508 0%, #051018 50%, #030508 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#riverCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+}
+.river-text {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  padding: 2rem;
+}
+.river-quote-text {
+  font-style: italic;
+  font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+  color: rgba(122,179,200,0.85);
+  max-width: 700px;
+  margin: 0 auto 1rem;
+  line-height: 1.6;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.8);
+}
+.river-attr-text {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  color: rgba(122,179,200,0.35);
+}
+
+/* ── SOCIETY ── */
+#society { background: linear-gradient(180deg, #050508 0%, #080510 100%); }
+
+.pyramid-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.class-tier {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  transition: all 0.3s;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.class-tier::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(212,160,23,0.06), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.class-tier:hover::after { opacity: 1; }
+.class-tier:hover .tier-label { color: var(--gold); }
+.class-tier:hover .tier-bar { opacity: 1; }
+
+.tier-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.2rem 1.5rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: rgba(212,160,23,0.6);
+  background: rgba(10,5,2,0.5);
+  border-right: 1px solid rgba(200,135,74,0.1);
+  transition: color 0.3s;
+}
+.tier-icon { font-size: 1.2rem; }
+.tier-desc {
+  padding: 1.2rem 1.5rem;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: rgba(245,232,200,0.55);
+  background: rgba(10,5,2,0.3);
+}
+.tier-bar {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom, var(--gold), var(--clay));
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.society-note {
+  max-width: 700px;
+  margin: 3rem auto 0;
+  padding: 2rem;
+  background: rgba(212,160,23,0.05);
+  border: 1px solid rgba(212,160,23,0.15);
+  text-align: center;
+  font-style: italic;
+  color: rgba(245,232,200,0.55);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+/* ── GODS ── */
+#gods { background: linear-gradient(180deg, #080510 0%, #02020a 100%); }
+
+.gods-hex-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.god-tile {
+  background: linear-gradient(135deg, rgba(26,58,107,0.25) 0%, rgba(5,2,15,0.8) 100%);
+  border: 1px solid rgba(26,58,107,0.2);
+  padding: 2.5rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+.god-tile::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(26,58,107,0.4), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.god-tile:hover {
+  border-color: rgba(122,179,200,0.5);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 60px rgba(26,58,107,0.3);
+}
+.god-tile:hover::before { opacity: 1; }
+.god-tile:hover .god-symbol { transform: scale(1.3); }
+.god-tile:hover .god-name { color: var(--sky-day); }
+
+.god-symbol {
+  font-size: 3.5rem;
+  display: block;
+  margin-bottom: 1rem;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.god-name {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1rem;
+  color: var(--sky-day);
+  margin-bottom: 0.2rem;
+  transition: color 0.3s;
+}
+.god-domain {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: rgba(122,179,200,0.4);
+  margin-bottom: 0.8rem;
+  text-transform: uppercase;
+}
+.god-desc {
+  font-size: 0.85rem;
+  color: rgba(245,232,200,0.45);
+  line-height: 1.6;
+}
+
+/* Ziggurat illustration section */
+.ziggurat-section {
+  background: linear-gradient(180deg, #02020a 0%, #0a0503 100%);
+  padding: 5rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.ziggurat-glow {
+  position: absolute;
+  bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 600px; height: 300px;
+  background: radial-gradient(ellipse, rgba(212,160,23,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+.ziggurat-section h3 {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  color: var(--sand);
+  margin-bottom: 1rem;
+}
+.ziggurat-section p {
+  font-size: 1rem;
+  color: rgba(245,232,200,0.5);
+  max-width: 550px;
+  margin: 0 auto 3rem;
+  line-height: 1.7;
+  font-style: italic;
+}
+
+/* ── LEISURE ── */
+#leisure { background: linear-gradient(180deg, #0a0503 0%, #0d0a04 100%); }
+
+.leisure-masonry {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto;
+  gap: 1rem;
+}
+
+.leisure-card {
+  background: rgba(15,10,5,0.8);
+  border: 1px solid rgba(200,135,74,0.1);
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s;
+}
+.leisure-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(to right, transparent, var(--gold), transparent);
+  transform: scaleX(0);
+  transition: transform 0.4s;
+}
+.leisure-card:hover { border-color: rgba(212,160,23,0.2); transform: translateY(-4px); }
+.leisure-card:hover::before { transform: scaleX(1); }
+
+.leisure-card:nth-child(1) { grid-column: span 2; }
+.leisure-card:nth-child(4) { grid-column: span 2; }
+
+.leisure-icon { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
+.leisure-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  color: var(--sand);
+  margin-bottom: 0.6rem;
+  letter-spacing: 0.05em;
+}
+.leisure-text {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: rgba(245,232,200,0.5);
+}
+
+/* ── MAP SECTION ── */
+#map-section { background: #02020a; padding: 5rem 2rem; }
+.map-title {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+.map-canvas-wrap {
+  position: relative;
+  max-width: 900px;
+  margin: 0 auto;
+  border: 1px solid rgba(200,135,74,0.15);
+  overflow: hidden;
+}
+#mapCanvas { display: block; width: 100%; cursor: crosshair; }
+.map-legend {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  color: rgba(245,232,200,0.4);
+}
+.legend-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+}
+
+/* ── FOOTER ── */
+footer {
+  background: #010101;
+  padding: 5rem 2rem 3rem;
+  text-align: center;
+  border-top: 1px solid rgba(200,135,74,0.1);
+}
+.footer-symbol {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+  display: block;
+  opacity: 0.3;
+}
+.footer-logo {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.3rem;
+  color: var(--clay);
+  margin-bottom: 0.75rem;
+}
+.footer-line {
+  width: 60px; height: 1px;
+  background: var(--clay);
+  margin: 1.5rem auto;
+  opacity: 0.3;
+}
+.footer-desc {
+  font-size: 0.9rem;
+  color: rgba(245,232,200,0.25);
+  max-width: 500px;
+  margin: 0 auto 2rem;
+  line-height: 1.8;
+}
+.footer-meta {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  color: rgba(245,232,200,0.12);
+  text-transform: uppercase;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .home-grid, .writing-layout { grid-template-columns: 1fr; gap: 2rem; }
+  .food-showcase { grid-template-columns: repeat(2, 1fr); }
+  .gods-hex-grid { grid-template-columns: repeat(2, 1fr); }
+  .leisure-masonry { grid-template-columns: 1fr; }
+  .leisure-card:nth-child(1), .leisure-card:nth-child(4) { grid-column: span 1; }
+  .work-bento { grid-template-columns: 1fr; }
+  .bento-card { grid-column: span 1 !important; }
+  .bento-card:nth-child(6) { flex-direction: column; }
+  .recipe-banner { flex-direction: column; text-align: center; }
+  .home-facts { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .food-showcase { grid-template-columns: 1fr; }
+  .gods-hex-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+
+<!-- PROGRESS BAR -->
+<div id="progress"></div>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-glyph">𒀭</div>
+  <div class="loader-text">Crossing the Euphrates…</div>
+</div>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section class="hero" id="top">
+  <canvas id="skyCanvas"></canvas>
+  <canvas id="particleCanvas"></canvas>
+
+  <svg class="hero-mountains" viewBox="0 0 1440 400" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,400 L0,280 Q100,220 200,260 Q300,300 400,220 Q500,140 600,200 Q700,260 800,180 Q900,100 1000,170 Q1100,240 1200,200 Q1300,160 1440,220 L1440,400Z" fill="#0d0803" opacity="0.9"/>
+    <path d="M0,400 L0,320 Q120,280 240,300 Q360,320 480,260 Q600,200 720,240 Q840,280 960,230 Q1080,180 1200,250 Q1320,300 1440,270 L1440,400Z" fill="#150d06" opacity="0.95"/>
+  </svg>
+
+  <svg class="hero-city" viewBox="0 0 1440 300" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Distant buildings -->
+    <rect x="50" y="200" width="30" height="80" fill="#1a0a04"/>
+    <rect x="90" y="170" width="20" height="110" fill="#1a0a04"/>
+    <rect x="150" y="190" width="25" height="90" fill="#140804"/>
+    <rect x="1300" y="185" width="30" height="95" fill="#1a0a04"/>
+    <rect x="1350" y="200" width="20" height="80" fill="#140804"/>
+    <rect x="1380" y="175" width="25" height="105" fill="#1a0a04"/>
+    <!-- MAIN ZIGGURAT -->
+    <rect x="560" y="220" width="320" height="60" fill="#3a1a08"/>
+    <rect x="585" y="185" width="270" height="38" fill="#4a2210"/>
+    <rect x="615" y="155" width="210" height="33" fill="#5a2a14"/>
+    <rect x="645" y="128" width="150" height="30" fill="#6a3218"/>
+    <rect x="675" y="104" width="90" height="27" fill="#7a3a1c"/>
+    <rect x="700" y="84" width="40" height="23" fill="#8a4220"/>
+    <!-- Staircase -->
+    <rect x="715" y="84" width="10" height="196" fill="rgba(0,0,0,0.3)"/>
+    <!-- Temple top glow -->
+    <ellipse cx="720" cy="80" rx="25" ry="8" fill="rgba(212,160,23,0.3)" filter="blur(4px)"/>
+    <rect x="705" y="60" width="30" height="25" fill="#9a4a24"/>
+    <!-- Palm trees -->
+    <line x1="480" y1="280" x2="480" y2="210" stroke="#3a2010" stroke-width="5"/>
+    <ellipse cx="480" cy="205" rx="28" ry="16" fill="#2a4a18" opacity="0.9"/>
+    <line x1="520" y1="280" x2="520" y2="225" stroke="#3a2010" stroke-width="4"/>
+    <ellipse cx="520" cy="220" rx="22" ry="13" fill="#2a4a18" opacity="0.8"/>
+    <line x1="940" y1="280" x2="940" y2="215" stroke="#3a2010" stroke-width="5"/>
+    <ellipse cx="940" cy="210" rx="26" ry="15" fill="#2a4a18" opacity="0.9"/>
+    <line x1="970" y1="280" x2="970" y2="228" stroke="#3a2010" stroke-width="4"/>
+    <ellipse cx="970" cy="223" rx="20" ry="12" fill="#2a4a18" opacity="0.8"/>
+    <!-- Water -->
+    <path d="M0,280 Q360,260 720,270 Q1080,280 1440,265 L1440,300 L0,300Z" fill="#0a2030" opacity="0.7"/>
+    <path d="M0,285 Q360,265 720,275 Q1080,285 1440,270 L1440,300 L0,300Z" fill="#0d2535" opacity="0.5"/>
+  </svg>
+
+  <div class="hero-content" id="heroContent">
+    <div class="hero-eyebrow">Between the Two Rivers · Tigris &amp; Euphrates</div>
+    <h1 class="hero-title">
+      Daily Life in
+      <span>Ancient Mesopotamia</span>
+    </h1>
+    <p class="hero-subtitle">The first cities. The first writing. The first laws. Journey into the world that built civilization.</p>
+    <div class="hero-badges">
+      <div class="hero-badge">c. 3500–500 BCE</div>
+      <div class="hero-badge">Sumer · Akkad · Babylon · Assyria</div>
+      <div class="hero-badge">The Cradle of Civilization</div>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <div class="scroll-line"></div>
+    <div class="scroll-label">Scroll to explore</div>
+  </div>
+</section>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <div class="nav-inner">
+    <div class="nav-logo">𒀭 Mesopotamia</div>
+    <div class="nav-links">
+      <a class="nav-link" href="#day">The Day</a>
+      <a class="nav-link" href="#home">Home</a>
+      <a class="nav-link" href="#food">Food</a>
+      <a class="nav-link" href="#work">Work</a>
+      <a class="nav-link" href="#writing">Writing</a>
+      <a class="nav-link" href="#society">Society</a>
+      <a class="nav-link" href="#gods">Gods</a>
+      <a class="nav-link" href="#leisure">Leisure</a>
+      <a class="nav-link" href="#map-section">Map</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════ DAY ═══════════════ -->
+<div class="divider"></div>
+<section id="day">
+  <div class="section-wrap">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <div class="section-tag">I</div>
+        <h2 class="section-title">A Day Between the Rivers</h2>
+        <p class="section-lead">From the first prayer at dawn to the last song under the stars — a day in 2000 BCE Ur.</p>
+      </div>
+
+      <div class="day-clock reveal" id="dayClock">
+        <div class="clock-ring"></div>
+        <div class="clock-ring"></div>
+        <div class="clock-ring"></div>
+        <div class="clock-sun" id="clockSun"></div>
+        <div class="clock-label">
+          <div class="clock-time-display" id="clockTimeDisplay">Dawn</div>
+          <div class="clock-period" id="clockPeriod">5:00 AM</div>
+        </div>
+      </div>
+
+      <div class="time-events reveal">
+        <div class="time-event active" data-hour="5" onclick="setClockTime(this, 5, 'Dawn', '5:00 AM')">
+          <div class="event-time-badge">5 AM</div>
+          <div class="event-icon">🌅</div>
+          <div class="event-body">
+            <div class="event-title">Before the Sun Rises</div>
+            <div class="event-text">Farmers rise before light. Temple priests begin morning offerings. The scent of baking bread drifts through mud-brick alleyways as the city stirs to life.</div>
+          </div>
+        </div>
+        <div class="time-event" data-hour="7" onclick="setClockTime(this, 7, 'Morning', '7:00 AM')">
+          <div class="event-time-badge">7 AM</div>
+          <div class="event-icon">🙏</div>
+          <div class="event-body">
+            <div class="event-title">Prayer & Breakfast</div>
+            <div class="event-text">Families pray at household shrines. Breakfast: flatbread, dates, and watered beer — the universal Mesopotamian staple that sustained everyone from slave to king.</div>
+          </div>
+        </div>
+        <div class="time-event" data-hour="9" onclick="setClockTime(this, 9, 'Morning', '9:00 AM')">
+          <div class="event-time-badge">9 AM</div>
+          <div class="event-icon">🌾</div>
+          <div class="event-body">
+            <div class="event-title">The Great Labor Begins</div>
+            <div class="event-text">Farmers head to fields with ox-drawn plows. Merchants open stalls near the city gate. Scribes take their places in the edubba — the tablet house — to record the day's transactions.</div>
+          </div>
+        </div>
+        <div class="time-event" data-hour="12" onclick="setClockTime(this, 12, 'Midday', '12:00 PM')">
+          <div class="event-time-badge">Noon</div>
+          <div class="event-icon">☀️</div>
+          <div class="event-body">
+            <div class="event-title">Rest from the Fierce Sun</div>
+            <div class="event-text">Work pauses under the brutal Mesopotamian heat. Families gather for a main meal of lentil stew, onions, and fish. Then comes the sacred afternoon sleep.</div>
+          </div>
+        </div>
+        <div class="time-event" data-hour="15" onclick="setClockTime(this, 15, 'Afternoon', '3:00 PM')">
+          <div class="event-time-badge">3 PM</div>
+          <div class="event-icon">🏺</div>
+          <div class="event-body">
+            <div class="event-title">Market & Craft</div>
+            <div class="event-text">Potters shape clay, weavers work looms, metalworkers stoke furnaces. Women manage households and negotiate at market stalls — with full legal rights centuries ahead of their time.</div>
+          </div>
+        </div>
+        <div class="time-event" data-hour="19" onclick="setClockTime(this, 19, 'Evening', '7:00 PM')">
+          <div class="event-time-badge">Sunset</div>
+          <div class="event-icon">🌙</div>
+          <div class="event-body">
+            <div class="event-title">Stories & Starlight</div>
+            <div class="event-text">As the rivers glitter in dusk light, families gather on rooftops. Elders recount the Epic of Gilgamesh. Music from lyres and drums carries across the city. The stars — mapped by Babylonian priests — fill the sky.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ HOME ═══════════════ -->
+<div class="divider"></div>
+<section id="home" style="background: linear-gradient(180deg, #120a04 0%, #0d0803 100%);">
+  <div class="section-wrap">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <div class="section-tag">II</div>
+        <h2 class="section-title">Home & Family</h2>
+        <p class="section-lead">The Mesopotamian home was sanctuary, workshop, and shrine — all in one mud-brick world.</p>
+      </div>
+      <div class="home-grid">
+        <div class="home-illustration reveal-left">
+          <div class="house-svg-wrap">
+            <div class="house-glow"></div>
+            <svg viewBox="0 0 400 350" xmlns="http://www.w3.org/2000/svg">
+              <!-- House exterior -->
+              <rect x="40" y="120" width="320" height="210" fill="#6a3018" rx="2"/>
+              <!-- Wall texture -->
+              <rect x="40" y="120" width="320" height="210" fill="url(#brickPattern)" opacity="0.4"/>
+              <defs>
+                <pattern id="brickPattern" patternUnits="userSpaceOnUse" width="40" height="20">
+                  <rect width="40" height="20" fill="none" stroke="rgba(0,0,0,0.3)" stroke-width="0.5"/>
+                  <rect x="0" y="10" width="20" height="10" fill="none" stroke="rgba(0,0,0,0.3)" stroke-width="0.5"/>
+                </pattern>
+              </defs>
+              <!-- Roof flat top -->
+              <rect x="30" y="112" width="340" height="12" fill="#8a4020" rx="1"/>
+              <!-- Courtyard opening -->
+              <rect x="140" y="160" width="120" height="120" fill="#3a1808"/>
+              <!-- Sky/open courtyard -->
+              <rect x="145" y="165" width="110" height="110" fill="#0a1525" rx="1"/>
+              <!-- Stars in courtyard -->
+              <circle cx="175" cy="190" r="1" fill="#ffd700" opacity="0.8"/>
+              <circle cx="210" cy="185" r="1.5" fill="#ffd700" opacity="0.6"/>
+              <circle cx="230" cy="200" r="1" fill="#ffd700" opacity="0.9"/>
+              <circle cx="195" cy="215" r="1" fill="#ffd700" opacity="0.7"/>
+              <circle cx="160" cy="220" r="1.5" fill="#ffd700" opacity="0.5"/>
+              <!-- Door -->
+              <rect x="185" y="270" width="30" height="60" fill="#2a1208" rx="1"/>
+              <ellipse cx="200" cy="270" rx="15" ry="5" fill="#3a1808"/>
+              <!-- Windows -->
+              <rect x="60" y="160" width="50" height="35" fill="#0a1525" rx="1"/>
+              <rect x="290" y="160" width="50" height="35" fill="#0a1525" rx="1"/>
+              <!-- Window glow (lamp light) -->
+              <rect x="62" y="162" width="46" height="31" fill="rgba(200,120,30,0.25)" rx="1"/>
+              <rect x="292" y="162" width="46" height="31" fill="rgba(200,120,30,0.25)" rx="1"/>
+              <!-- Lamp posts -->
+              <line x1="55" y1="330" x2="55" y2="290" stroke="#5a3018" stroke-width="3"/>
+              <circle cx="55" cy="285" r="6" fill="#ffd700" opacity="0.7"/>
+              <line x1="345" y1="330" x2="345" y2="290" stroke="#5a3018" stroke-width="3"/>
+              <circle cx="345" cy="285" r="6" fill="#ffd700" opacity="0.7"/>
+              <!-- People silhouettes on roof -->
+              <circle cx="90" cy="108" r="5" fill="rgba(245,232,200,0.3)"/>
+              <line x1="90" y1="113" x2="90" y2="130" stroke="rgba(245,232,200,0.3)" stroke-width="2"/>
+              <circle cx="320" cy="108" r="5" fill="rgba(245,232,200,0.3)"/>
+              <line x1="320" y1="113" x2="320" y2="130" stroke="rgba(245,232,200,0.3)" stroke-width="2"/>
+              <!-- Label -->
+              <text x="200" y="20" text-anchor="middle" font-family="Cinzel, serif" font-size="10" fill="rgba(245,232,200,0.3)" letter-spacing="3">TYPICAL URBAN DWELLING · UR III PERIOD</text>
+            </svg>
+          </div>
+          <div class="home-facts">
+            <div class="fact-chip">
+              <div class="fact-chip-icon">🧱</div>
+              <div class="fact-chip-label">Construction</div>
+              <div class="fact-chip-text">Sun-dried mud brick, plastered with clay</div>
+            </div>
+            <div class="fact-chip">
+              <div class="fact-chip-icon">📐</div>
+              <div class="fact-chip-label">Size</div>
+              <div class="fact-chip-text">100–200 m² for a middle-class family</div>
+            </div>
+            <div class="fact-chip">
+              <div class="fact-chip-icon">🌿</div>
+              <div class="fact-chip-label">Cooling</div>
+              <div class="fact-chip-text">Thick walls + courtyard airflow</div>
+            </div>
+            <div class="fact-chip">
+              <div class="fact-chip-icon">🪔</div>
+              <div class="fact-chip-label">Lighting</div>
+              <div class="fact-chip-text">Sesame oil lamps, clay braziers</div>
+            </div>
+          </div>
+        </div>
+        <div class="home-text reveal-right">
+          <h3>Mud Brick Walls,<br>Warm Hearths</h3>
+          <p>Mesopotamian homes were built from the same material as their great temples — mud brick, dried under the fierce Mesopotamian sun. Most families lived in single-story houses arranged around a central open courtyard, which provided light, ventilation, and a private outdoor space for children and livestock.</p>
+          <p>The extended family lived together across a walled compound. Marriage was a formal legal contract. Women retained property rights throughout their lives — a freedom unknown in most of the ancient world — and could lend money, run businesses, and appear in court as equals.</p>
+          <div class="pull-quote">
+            If a man takes a wife and that woman bears him children, the children shall inherit from him.
+            <br><small style="font-style:normal; font-family:'Cinzel',serif; font-size:0.65rem; letter-spacing:0.2em; color:rgba(212,160,23,0.4);">— CODE OF HAMMURABI, C. 1754 BCE</small>
+          </div>
+          <p>Children of elite families attended the <em>edubba</em> (tablet house), where they learned cuneiform script, mathematics, and literature from age six. Daughters were educated at home in household arts — but some women, particularly at temples, became literate scribes and poets.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOD ═══════════════ -->
+<div class="divider"></div>
+<section id="food" style="background: linear-gradient(180deg, #0d0803 0%, #0a0d08 100%);">
+  <div class="section-wrap">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <div class="section-tag">III</div>
+        <h2 class="section-title">Food & Drink</h2>
+        <p class="section-lead">The world's oldest surviving recipes were pressed into clay tablets in Mesopotamia — a civilization that took its cuisine very seriously.</p>
+      </div>
+      <div class="food-showcase reveal">
+        <div class="food-card"><span class="food-emoji">🍺</span><div class="food-card-name">Barley Beer</div><div class="food-card-desc">The universal drink of all classes, safer than water and consumed through reed straws to filter the grain sediment.</div></div>
+        <div class="food-card"><span class="food-emoji">🫓</span><div class="food-card-name">Flatbread</div><div class="food-card-desc">Baked from emmer wheat or barley. Temple bakeries produced hundreds of loaves daily for workers and offerings.</div></div>
+        <div class="food-card"><span class="food-emoji">🐟</span><div class="food-card-name">River Fish</div><div class="food-card-desc">Carp, catfish, and perch from the great rivers. Dried, salted, and traded across the ancient Near East.</div></div>
+        <div class="food-card"><span class="food-emoji">🧅</span><div class="food-card-name">Onions & Garlic</div><div class="food-card-desc">So essential they appeared in every ration list. Traded by the barrel, used in virtually every dish.</div></div>
+        <div class="food-card"><span class="food-emoji">🌴</span><div class="food-card-name">Dates</div><div class="food-card-desc">Date palms lined the riverbanks. Fruit, syrup, date wine — one grove could sustain a family through famine.</div></div>
+        <div class="food-card"><span class="food-emoji">🍖</span><div class="food-card-name">Roasted Mutton</div><div class="food-card-desc">A luxury for feasts and temple offerings. Sheep raised primarily for wool and milk, slaughtered for special occasions.</div></div>
+        <div class="food-card"><span class="food-emoji">🫘</span><div class="food-card-name">Lentil Stew</div><div class="food-card-desc">The backbone of the common diet. Lentils, leeks, onions, garlic — a hearty stew that sustained farmers through long days.</div></div>
+        <div class="food-card"><span class="food-emoji">🥛</span><div class="food-card-name">Dairy</div><div class="food-card-desc">Goat and sheep milk churned into butter and early cheese. The oldest depiction of cheesemaking is a Sumerian temple frieze.</div></div>
+        <div class="food-card"><span class="food-emoji">🌿</span><div class="food-card-name">Herbs & Spice</div><div class="food-card-desc">Coriander, cumin, mint, mustard. The world's oldest recipe — a lamb broth from 1750 BCE — calls for these very herbs.</div></div>
+      </div>
+      <div class="recipe-banner reveal">
+        <div class="recipe-icon">📜</div>
+        <div class="recipe-text">
+          <h4>The Yale Babylonian Collection</h4>
+          <p>Three clay tablets excavated from ancient Babylon, dating to approximately 1750 BCE, contain 35 recipes — making them the oldest known cookbook in human history. They describe complex meat stews with aromatic herbs, roasted birds stuffed with aromatics, and elaborate instructions that any modern chef could follow today.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ WORK ═══════════════ -->
+<div class="divider"></div>
+<section id="work" style="background: linear-gradient(180deg, #0a0d08 0%, #080808 100%);">
+  <div class="section-wrap">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <div class="section-tag">IV</div>
+        <h2 class="section-title">Work & Trade</h2>
+        <p class="section-lead">Mesopotamia invented the market economy, the concept of interest, and letters of credit — millennia before coins existed.</p>
+      </div>
+      <div class="work-bento reveal">
+        <div class="bento-card">
+          <div class="bento-icon">🌾</div>
+          <div class="bento-title">Farming</div>
+          <div class="bento-text">The great majority of Mesopotamians were farmers. Elaborate irrigation canal systems turned desert into productive fields of barley, wheat, and flax. Farmers paid taxes in grain to the temple and palace — the world's first taxation system.</div>
+        </div>
+        <div class="bento-card">
+          <div class="bento-icon">⚖️</div>
+          <div class="bento-title">Merchants & Trade</div>
+          <div class="bento-text">The <em>tamkārum</em> (merchants) operated under palace license, trading silver, textiles, and grain as far as Anatolia and the Indus Valley. They used clay tablets as binding contracts and issued letters of credit — the world's first banking system.</div>
+        </div>
+        <div class="bento-card">
+          <div class="bento-icon">🏺</div>
+          <div class="bento-title">Potters & Artisans</div>
+          <div class="bento-text">The potter's wheel — invented in Mesopotamia — revolutionized production. Craft guilds organized workers, set standards, and negotiated wages.</div>
+        </div>
+        <div class="bento-card">
+          <div class="bento-icon">📜</div>
+          <div class="bento-title">Scribes</div>
+          <div class="bento-text">Highly valued professionals who recorded everything from grain counts to epic poetry. A skilled scribe could rise to become a palace official or temple administrator.</div>
+        </div>
+        <div class="bento-card">
+          <div class="bento-icon">⚒️</div>
+          <div class="bento-title">Metalworkers</div>
+          <div class="bento-text">Copper, bronze, and eventually iron shaped weapons, tools, and luxury goods. Metalworkers held high social status and often worked directly for the palace or temple.</div>
+        </div>
+        <div class="bento-card">
+          <div class="bento-stat">500K</div>
+          <div>
+            <div class="bento-title">Clay Tablets Survive</div>
+            <div class="bento-text">Over 500,000 cuneiform tablets have been excavated — most of them business records, contracts, and inventories. Mesopotamia was the world's first bureaucracy, and their paper trail survives in fired clay.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ WRITING ═══════════════ -->
+<div class="divider"></div>
+<section id="writing" style="background: linear-gradient(180deg, #080808 0%, #050508 100%);">
+  <div class="section-wrap">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <div class="section-tag">V</div>
+        <h2 class="section-title">The Written Word</h2>
+        <p class="section-lead">Writing was not invented for poetry — it was invented for counting grain. And from counting came civilization.</p>
+      </div>
+      <div class="writing-layout">
+        <div class="reveal-left">
+          <div class="tablet-3d">
+            <div class="tablet-inner">
+              <div class="cuneiform-block">𒀭 𒂗 𒍪 𒄑<br>𒊭 𒆳 𒆳 𒀭<br>𒌷 𒄴 𒂗 𒍪<br>𒉡 𒌷 𒌝 𒅆<br>𒄑𒂗𒈦 𒈗<br>𒆳𒆳 𒍪</div>
+            </div>
+          </div>
+          <div class="tablet-caption">Replica · Administrative tablet, Ur III period, c. 2050 BCE</div>
+          <div class="gilgamesh-quote" style="margin-top:2rem;">
+            <div class="quote-text">"When the gods created mankind, they allotted death to mankind, but life they retained in their own keeping."</div>
+            <div class="quote-source">The Epic of Gilgamesh · c. 2100 BCE · Oldest surviving literature</div>
+          </div>
+        </div>
+        <div class="reveal-right">
+          <div class="evolution-steps">
+            <div style="padding:1.5rem; background: rgba(90,48,24,0.2); border-bottom: 1px solid rgba(200,135,74,0.1);">
+              <div style="font-family:'Cinzel',serif; font-size:0.75rem; letter-spacing:0.1em; color:var(--gold); margin-bottom:0.3rem;">How Writing Was Born</div>
+              <div style="font-size:0.88rem; color:rgba(245,232,200,0.55); line-height:1.6;">Around 3400 BCE, Sumerian administrators began pressing wedge-shaped marks into wet clay to count livestock and grain. Over centuries, these accounting marks evolved into one of humanity's most transformative inventions.</div>
+            </div>
+            <div class="evo-step">
+              <div class="evo-symbol">🐂</div>
+              <div class="evo-info">
+                <div class="evo-era">3400 BCE · Pictographic</div>
+                <div class="evo-desc">A drawn ox head represented "ox." Simple, recognizable, limited to concrete objects.</div>
+              </div>
+            </div>
+            <div class="evo-step">
+              <div class="evo-symbol" style="font-size:1.8rem; color:var(--clay);">𒀭</div>
+              <div class="evo-info">
+                <div class="evo-era">3100 BCE · Early Cuneiform</div>
+                <div class="evo-desc">Signs rotated and abstracted. The ox became wedge-marks. Now abstract ideas could be written.</div>
+              </div>
+            </div>
+            <div class="evo-step">
+              <div class="evo-symbol" style="font-size:1.5rem; color:var(--sand);">𒄞</div>
+              <div class="evo-info">
+                <div class="evo-era">2600 BCE · Classic Cuneiform</div>
+                <div class="evo-desc">Fully abstract wedge-combinations. A complete writing system capable of poetry, law, and science.</div>
+              </div>
+            </div>
+            <div class="evo-step">
+              <div class="evo-symbol" style="font-size:1.2rem; color:rgba(245,232,200,0.4);">ABC</div>
+              <div class="evo-info">
+                <div class="evo-era">1050 BCE → Alphabet</div>
+                <div class="evo-desc">Phoenicians adapted cuneiform concepts into the first alphabet, which gave us modern Latin script.</div>
+              </div>
+            </div>
+            <div style="padding:1.5rem; background:rgba(26,58,107,0.15); border-top:1px solid rgba(26,58,107,0.2);">
+              <div style="font-family:'Cinzel',serif; font-size:0.7rem; color:rgba(122,179,200,0.6); letter-spacing:0.1em; margin-bottom:0.5rem;">DID YOU KNOW</div>
+              <div style="font-size:0.88rem; color:rgba(245,232,200,0.5); line-height:1.6;">Learning cuneiform script required 12 years of dedicated study. Scribal schools drilled students on proverbs, mathematical tables, and literature. The oldest known author in history is Enheduanna — a Sumerian high priestess who signed her hymns around 2300 BCE.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ RIVER INTERLUDE ═══════════════ -->
+<div class="river-section">
+  <canvas id="riverCanvas"></canvas>
+  <div class="river-text">
+    <div class="river-quote-text">"When the rivers flood, we rejoice. When they retreat, we mourn. We are children of Tigris and Euphrates — born between two waters, sustained by both."</div>
+    <div class="river-attr-text">Sumerian Hymn to the Rivers · c. 2100 BCE</div>
+  </div>
+</div>
+
+<!-- ═══════════════ SOCIETY ═══════════════ -->
+<div class="divider"></div>
+<section id="society" style="background: linear-gradient(180deg, #050508 0%, #080510 100%);">
+  <div class="section-wrap">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <div class="section-tag">VI</div>
+        <h2 class="section-title">Society & Class</h2>
+        <p class="section-lead">Strictly ordered, yet not without mobility. A skilled scribe could rise; a careless king could fall.</p>
+      </div>
+      <div class="pyramid-layout reveal">
+        <div class="class-tier">
+          <div class="tier-bar"></div>
+          <div class="tier-label"><span class="tier-icon">👑</span>King / Lugal</div>
+          <div class="tier-desc">The "big man" ruled as intermediary between gods and humans. He commanded the army, directed irrigation projects, and administered justice through law codes. His power was absolute — but accountable to the gods.</div>
+        </div>
+        <div class="class-tier">
+          <div class="tier-bar"></div>
+          <div class="tier-label"><span class="tier-icon">🏛️</span>Priests</div>
+          <div class="tier-desc">Temple priests managed vast estates, conducted rituals, and interpreted celestial omens. High priests rivaled the king in influence, controlling enormous stores of grain, livestock, and silver.</div>
+        </div>
+        <div class="class-tier">
+          <div class="tier-bar"></div>
+          <div class="tier-label"><span class="tier-icon">⚔️</span>Warriors</div>
+          <div class="tier-desc">Professional soldiers and nobles formed a military elite rewarded with land grants. Battle was a path to social elevation for ambitious men. Successful generals sometimes became kings.</div>
+        </div>
+        <div class="class-tier">
+          <div class="tier-bar"></div>
+          <div class="tier-label"><span class="tier-icon">📜</span>Scribes</div>
+          <div class="tier-desc">Literate administrators staffed palaces, temples, and wealthy estates. Literacy was their power. A boy born poor who survived scribal school could live better than a farmer's son who inherited land.</div>
+        </div>
+        <div class="class-tier">
+          <div class="tier-bar"></div>
+          <div class="tier-label"><span class="tier-icon">🏺</span>Artisans</div>
+          <div class="tier-desc">Skilled craft workers — metalworkers, jewelers, weavers, potters — occupied the productive middle of society, organized in guilds often attached to palaces or temples.</div>
+        </div>
+        <div class="class-tier">
+          <div class="tier-bar"></div>
+          <div class="tier-label"><span class="tier-icon">🌾</span>Farmers</div>
+          <div class="tier-desc">The vast majority of Mesopotamians were free farmers who paid taxes in grain and owed labor service. They owned small plots, negotiated loans, participated in local markets, and had legal recourse in disputes.</div>
+        </div>
+        <div class="class-tier">
+          <div class="tier-bar"></div>
+          <div class="tier-label"><span class="tier-icon">⛓️</span>Slaves</div>
+          <div class="tier-desc">Typically prisoners of war or debt-slaves. Unlike other ancient systems, Mesopotamian slaves had legal protections — they could own property, earn wages, marry free citizens, and buy their freedom.</div>
+        </div>
+      </div>
+      <div class="society-note reveal">
+        Unlike most ancient societies, Mesopotamian women could own property, run businesses, lend money at interest, and appear in court. Thousands of surviving legal tablets document women as traders, brewers, priestesses, and scribes — rights unmatched for millennia to come.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ GODS ═══════════════ -->
+<div class="divider"></div>
+<section id="gods" style="background: linear-gradient(180deg, #080510 0%, #02020a 100%);">
+  <div class="section-wrap">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <div class="section-tag">VII</div>
+        <h2 class="section-title">Gods & the Sacred World</h2>
+        <p class="section-lead">The gods did not live in heaven alone — they lived in their cities, attended by priests as if they were divine royalty.</p>
+      </div>
+      <div class="gods-hex-grid reveal">
+        <div class="god-tile"><span class="god-symbol">⚡</span><div class="god-name">Enlil</div><div class="god-domain">Wind · Storm · Kingship</div><div class="god-desc">Lord of air and storms, Enlil granted the power to rule. Kings claimed his blessing to legitimize authority over cities and armies.</div></div>
+        <div class="god-tile"><span class="god-symbol">🌊</span><div class="god-name">Enki</div><div class="god-domain">Wisdom · Water · Craft</div><div class="god-desc">The clever god of underground waters gifted civilization's arts to humanity and often protected humans from divine wrath.</div></div>
+        <div class="god-tile"><span class="god-symbol">☀️</span><div class="god-name">Shamash</div><div class="god-domain">Sun · Justice · Truth</div><div class="god-desc">The all-seeing sun god was patron of judges and merchants. The Code of Hammurabi was handed down from Shamash himself.</div></div>
+        <div class="god-tile"><span class="god-symbol">🌙</span><div class="god-name">Nanna / Sin</div><div class="god-domain">Moon · Time · Calendar</div><div class="god-desc">The moon god determined the Mesopotamian calendar. His phases regulated festivals, plantings, and religious ceremonies.</div></div>
+        <div class="god-tile"><span class="god-symbol">⭐</span><div class="god-name">Inanna / Ishtar</div><div class="god-domain">Love · War · Desire</div><div class="god-desc">The most celebrated deity of Mesopotamia, Inanna embodied contradiction. Her hymns, by Enheduanna, are the oldest signed literature in history.</div></div>
+        <div class="god-tile"><span class="god-symbol">🌱</span><div class="god-name">Ninhursag</div><div class="god-domain">Earth · Birth · Healing</div><div class="god-desc">The great mother goddess oversaw childbirth and healing. Her sacred groves stood at the edges of every major city.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ZIGGURAT SECTION -->
+<div class="ziggurat-section">
+  <div class="ziggurat-glow"></div>
+  <h3>The Great Ziggurat</h3>
+  <p>The stepped temple-tower was the center of every Mesopotamian city — a mountain built by human hands where heaven touched earth, and only the highest priests could ascend to meet their god.</p>
+  <svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg" style="max-width:700px; width:100%; filter:drop-shadow(0 0 40px rgba(212,160,23,0.2));">
+    <defs>
+      <radialGradient id="zglow" cx="50%" cy="100%" r="60%">
+        <stop offset="0%" stop-color="rgba(212,160,23,0.3)"/>
+        <stop offset="100%" stop-color="transparent"/>
+      </radialGradient>
+    </defs>
+    <ellipse cx="400" cy="390" rx="350" ry="20" fill="url(#zglow)"/>
+    <!-- Ground -->
+    <rect x="0" y="370" width="800" height="30" fill="#0d0a04"/>
+    <!-- Water reflection -->
+    <path d="M0,370 Q200,365 400,368 Q600,371 800,366 L800,380 Q600,383 400,380 Q200,377 0,382Z" fill="#0a1a2a" opacity="0.6"/>
+    <!-- Ziggurat layers -->
+    <rect x="100" y="340" width="600" height="38" fill="#3a1a08" rx="1"/>
+    <rect x="135" y="305" width="530" height="38" fill="#4a2210" rx="1"/>
+    <rect x="170" y="272" width="460" height="36" fill="#5a2a14" rx="1"/>
+    <rect x="210" y="242" width="380" height="33" fill="#6a3218" rx="1"/>
+    <rect x="255" y="215" width="290" height="30" fill="#7a3a1c" rx="1"/>
+    <rect x="305" y="190" width="190" height="28" fill="#8a4220" rx="1"/>
+    <rect x="355" y="168" width="90" height="25" fill="#9a4a24" rx="1"/>
+    <!-- Temple -->
+    <rect x="365" y="140" width="70" height="30" fill="#aa5228"/>
+    <polygon points="365,140 400,115 435,140" fill="#c86030"/>
+    <!-- Staircase lines -->
+    <rect x="395" y="115" width="10" height="263" fill="rgba(0,0,0,0.25)"/>
+    <!-- Side stairs -->
+    <rect x="100" y="340" width="10" height="30" fill="rgba(0,0,0,0.2)"/>
+    <rect x="690" y="340" width="10" height="30" fill="rgba(0,0,0,0.2)"/>
+    <!-- Divine light / star -->
+    <circle cx="400" cy="100" r="12" fill="#ffd700" opacity="0.9" filter="url(#blur)"/>
+    <defs><filter id="blur"><feGaussianBlur stdDeviation="3"/></filter></defs>
+    <circle cx="400" cy="100" r="5" fill="#fff" opacity="0.8"/>
+    <!-- Light rays -->
+    <line x1="400" y1="88" x2="400" y2="70" stroke="#ffd700" stroke-width="1.5" opacity="0.5"/>
+    <line x1="388" y1="93" x2="378" y2="78" stroke="#ffd700" stroke-width="1" opacity="0.3"/>
+    <line x1="412" y1="93" x2="422" y2="78" stroke="#ffd700" stroke-width="1" opacity="0.3"/>
+    <!-- People at base -->
+    <circle cx="150" cy="367" r="5" fill="rgba(245,232,200,0.4)"/>
+    <line x1="150" y1="372" x2="150" y2="385" stroke="rgba(245,232,200,0.4)" stroke-width="2"/>
+    <circle cx="650" cy="367" r="5" fill="rgba(245,232,200,0.4)"/>
+    <line x1="650" y1="372" x2="650" y2="385" stroke="rgba(245,232,200,0.4)" stroke-width="2"/>
+    <circle cx="200" cy="367" r="4" fill="rgba(245,232,200,0.3)"/>
+    <circle cx="600" cy="367" r="4" fill="rgba(245,232,200,0.3)"/>
+    <circle cx="250" cy="367" r="3" fill="rgba(245,232,200,0.2)"/>
+    <circle cx="550" cy="367" r="3" fill="rgba(245,232,200,0.2)"/>
+    <!-- Palm trees -->
+    <line x1="60" y1="370" x2="60" y2="300" stroke="#3a2010" stroke-width="6"/>
+    <ellipse cx="60" cy="294" rx="32" ry="18" fill="#2a4a18" opacity="0.85"/>
+    <line x1="740" y1="370" x2="740" y2="310" stroke="#3a2010" stroke-width="6"/>
+    <ellipse cx="740" cy="304" rx="30" ry="17" fill="#2a4a18" opacity="0.85"/>
+    <!-- Stars -->
+    <circle cx="120" cy="30" r="1.5" fill="#fff" opacity="0.6"/>
+    <circle cx="200" cy="55" r="1" fill="#fff" opacity="0.5"/>
+    <circle cx="300" cy="20" r="1.5" fill="#fff" opacity="0.7"/>
+    <circle cx="500" cy="35" r="1" fill="#fff" opacity="0.6"/>
+    <circle cx="620" cy="15" r="2" fill="#ffd700" opacity="0.7"/>
+    <circle cx="680" cy="50" r="1" fill="#fff" opacity="0.5"/>
+  </svg>
+</div>
+
+<!-- ═══════════════ LEISURE ═══════════════ -->
+<div class="divider"></div>
+<section id="leisure" style="background: linear-gradient(180deg, #0a0503 0%, #0d0a04 100%);">
+  <div class="section-wrap">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <div class="section-tag">VIII</div>
+        <h2 class="section-title">Leisure & Culture</h2>
+        <p class="section-lead">They worked hard, played harder, and left behind evidence of music, games, and breathtaking art that still astonishes us today.</p>
+      </div>
+      <div class="leisure-masonry reveal">
+        <div class="leisure-card">
+          <span class="leisure-icon">🎵</span>
+          <div class="leisure-title">Music & Performance</div>
+          <div class="leisure-text">Lyres, harps, flutes, and drums filled Mesopotamian evenings with sound. The Golden Lyre of Ur — buried with a queen around 2500 BCE — is one of the world's oldest surviving instruments, found with 72 other musicians in the royal tomb. Music was considered sacred, able to please the gods and heal the sick.</div>
+        </div>
+        <div class="leisure-card">
+          <span class="leisure-icon">🎲</span>
+          <div class="leisure-title">The Royal Game of Ur</div>
+          <div class="leisure-text">The oldest playable board game in existence. A Babylonian clay tablet discovered in the British Museum contains the complete rules, allowing modern players to play the exact same game enjoyed by Mesopotamian kings 4,500 years ago.</div>
+        </div>
+        <div class="leisure-card">
+          <span class="leisure-icon">🌟</span>
+          <div class="leisure-title">Astronomy & the Zodiac</div>
+          <div class="leisure-text">Babylonian priest-astronomers tracked celestial movements with astonishing precision, predicting eclipses centuries in advance. The 12-sign zodiac we use today originated in Mesopotamia — a direct inheritance from ancient star-watchers who mapped the heavens from temple towers.</div>
+        </div>
+        <div class="leisure-card">
+          <span class="leisure-icon">💍</span>
+          <div class="leisure-title">Jewelry & Fashion</div>
+          <div class="leisure-text">Gold, lapis lazuli, and carnelian were crafted into spectacular jewelry worn by men and women alike. Wool robes with fringed hems denoted rank — the longer the fringe, the higher the status. Both sexes wore kohl eyeliner, oils, and perfume.</div>
+        </div>
+        <div class="leisure-card">
+          <span class="leisure-icon">🤼</span>
+          <div class="leisure-title">Sport & Games</div>
+          <div class="leisure-text">Wrestling was highly respected and depicted widely in art. Foot races, archery, and chariot contests entertained thousands during festivals. Even children's toys have been unearthed — clay animals on wheels, dolls, and spinning tops.</div>
+        </div>
+        <div class="leisure-card">
+          <span class="leisure-icon">🫗</span>
+          <div class="leisure-title">Feasts & Festivals</div>
+          <div class="leisure-text">Twelve major religious festivals punctuated the Mesopotamian year. Tables were laden with meats, breads, and beer. Musicians played, storytellers recounted the deeds of heroes, and the divine statues of gods were paraded through city streets on ornate boats and chariots.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ MAP ═══════════════ -->
+<div class="divider"></div>
+<section id="map-section">
+  <div class="section-wrap">
+    <div class="section-inner">
+      <div class="map-title reveal">
+        <div class="section-tag">IX</div>
+        <h2 class="section-title">The Ancient World</h2>
+        <p class="section-lead" style="margin-top:1rem;">Hover over the cities to discover their legacy. Each dot was once the center of the known world.</p>
+      </div>
+      <div class="map-canvas-wrap reveal">
+        <canvas id="mapCanvas" height="400"></canvas>
+        <div id="mapTooltip" style="position:absolute; background:rgba(10,5,2,0.95); border:1px solid rgba(200,135,74,0.3); padding:1rem 1.5rem; pointer-events:none; opacity:0; transition:opacity 0.3s; max-width:220px;">
+          <div id="tooltipName" style="font-family:'Cinzel',serif; font-size:0.85rem; color:var(--sand); margin-bottom:0.3rem;"></div>
+          <div id="tooltipDesc" style="font-size:0.8rem; color:rgba(245,232,200,0.55); line-height:1.5;"></div>
+        </div>
+      </div>
+      <div class="map-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#ffd700;"></div>Major City</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#4a9bb0;"></div>River</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#3a6020;"></div>Fertile Land</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#8a7a60;"></div>Desert</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer>
+  <span class="footer-symbol">𒀭</span>
+  <div class="footer-logo">Between Two Rivers</div>
+  <div class="footer-line"></div>
+  <p class="footer-desc">Mesopotamia — from the Greek for "land between the rivers" — was home to humanity's first cities, writing system, law codes, and literature. The people who built this civilization worried about debt, celebrated harvests, told stories to their children, and gazed at the same stars we see tonight.</p>
+  <div class="footer-line"></div>
+  <div class="footer-meta">Historical & Educational · c. 3500–500 BCE · Tigris & Euphrates</div>
+</footer>
+
+<script>
+/* ═══ CURSOR ═══ */
+const cursor = document.getElementById('cursor');
+const cursorDot = document.getElementById('cursorDot');
+let mx = 0, my = 0;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px';
+  cursor.style.top = my + 'px';
+  cursorDot.style.left = mx + 'px';
+  cursorDot.style.top = my + 'px';
+});
+document.querySelectorAll('a,button,.god-tile,.time-event,.food-card,.bento-card,.class-tier,.leisure-card').forEach(el => {
+  el.addEventListener('mouseenter', () => { cursor.style.width = '40px'; cursor.style.height = '40px'; });
+  el.addEventListener('mouseleave', () => { cursor.style.width = '20px'; cursor.style.height = '20px'; });
+});
+
+/* ═══ LOADER ═══ */
+window.addEventListener('load', () => {
+  setTimeout(() => { document.getElementById('loader').classList.add('hidden'); }, 800);
+});
+
+/* ═══ PROGRESS BAR ═══ */
+window.addEventListener('scroll', () => {
+  const prog = document.getElementById('progress');
+  const scrollPct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+  prog.style.width = scrollPct + '%';
+});
+
+/* ═══ SKY CANVAS ═══ */
+const skyCanvas = document.getElementById('skyCanvas');
+const skyCtx = skyCanvas.getContext('2d');
+let skyTime = 0;
+function resizeSky() {
+  skyCanvas.width = skyCanvas.offsetWidth;
+  skyCanvas.height = skyCanvas.offsetHeight;
+}
+resizeSky();
+window.addEventListener('resize', resizeSky);
+
+const stars = Array.from({length:200}, () => ({
+  x: Math.random(), y: Math.random() * 0.7,
+  size: Math.random() * 1.5 + 0.3,
+  twinkle: Math.random() * Math.PI * 2
+}));
+
+function drawSky(t) {
+  const w = skyCanvas.width, h = skyCanvas.height;
+  skyTime = t * 0.0003;
+  const phase = (Math.sin(skyTime) + 1) / 2; // 0=night, 1=day
+  
+  const nightColor = [10, 5, 30];
+  const dawnColor = [80, 30, 10];
+  const dayColor = [40, 80, 120];
+  
+  let r, g, b;
+  if (phase < 0.5) {
+    const p = phase * 2;
+    r = nightColor[0] + (dawnColor[0]-nightColor[0])*p;
+    g = nightColor[1] + (dawnColor[1]-nightColor[1])*p;
+    b = nightColor[2] + (dawnColor[2]-nightColor[2])*p;
+  } else {
+    const p = (phase - 0.5) * 2;
+    r = dawnColor[0] + (dayColor[0]-dawnColor[0])*p;
+    g = dawnColor[1] + (dayColor[1]-dawnColor[1])*p;
+    b = dawnColor[2] + (dayColor[2]-dawnColor[2])*p;
+  }
+  
+  const grad = skyCtx.createLinearGradient(0, 0, 0, h);
+  grad.addColorStop(0, `rgb(${r|0},${g|0},${b|0})`);
+  grad.addColorStop(1, `rgb(${(r*0.3)|0},${(g*0.2)|0},${(b*0.1)|0})`);
+  skyCtx.fillStyle = grad;
+  skyCtx.fillRect(0, 0, w, h);
+  
+  // Stars (fade with phase)
+  stars.forEach(s => {
+    const tw = Math.sin(s.twinkle + t * 0.002) * 0.3 + 0.7;
+    skyCtx.beginPath();
+    skyCtx.arc(s.x*w, s.y*h, s.size*tw, 0, Math.PI*2);
+    skyCtx.fillStyle = `rgba(255,255,220,${Math.max(0,(1-phase)*tw)})`;
+    skyCtx.fill();
+    s.twinkle += 0.01;
+  });
+  
+  // Sun / moon
+  const sunX = w * (0.1 + phase * 0.8);
+  const sunY = h * (0.7 - Math.sin(phase * Math.PI) * 0.5);
+  
+  if (phase > 0.3) {
+    // Sun
+    const sunGrad = skyCtx.createRadialGradient(sunX, sunY, 0, sunX, sunY, 40);
+    sunGrad.addColorStop(0, `rgba(255,220,80,${phase})`);
+    sunGrad.addColorStop(0.3, `rgba(255,150,30,${phase*0.6})`);
+    sunGrad.addColorStop(1, 'transparent');
+    skyCtx.fillStyle = sunGrad;
+    skyCtx.fillRect(0, 0, w, h);
+    skyCtx.beginPath();
+    skyCtx.arc(sunX, sunY, 18, 0, Math.PI*2);
+    skyCtx.fillStyle = `rgba(255,240,100,${phase})`;
+    skyCtx.fill();
+  } else {
+    // Moon
+    skyCtx.beginPath();
+    skyCtx.arc(sunX, sunY, 14, 0, Math.PI*2);
+    skyCtx.fillStyle = `rgba(230,220,200,${1-phase*2})`;
+    skyCtx.fill();
+  }
+}
+
+/* ═══ PARTICLE CANVAS ═══ */
+const pCanvas = document.getElementById('particleCanvas');
+const pCtx = pCanvas.getContext('2d');
+function resizePCanvas() {
+  pCanvas.width = pCanvas.offsetWidth;
+  pCanvas.height = pCanvas.offsetHeight;
+}
+resizePCanvas();
+window.addEventListener('resize', resizePCanvas);
+
+const particles = Array.from({length:80}, () => ({
+  x: Math.random(),
+  y: Math.random(),
+  vx: (Math.random()-0.5)*0.1,
+  vy: -Math.random()*0.05 - 0.02,
+  size: Math.random()*2+0.5,
+  opacity: Math.random()*0.4+0.1,
+  life: Math.random()
+}));
+
+function drawParticles() {
+  const w = pCanvas.width, h = pCanvas.height;
+  pCtx.clearRect(0, 0, w, h);
+  particles.forEach(p => {
+    p.x += p.vx * 0.001;
+    p.y += p.vy * 0.001;
+    p.life += 0.002;
+    if (p.y < 0 || p.life > 1) {
+      p.x = Math.random();
+      p.y = 1;
+      p.life = 0;
+      p.vy = -Math.random()*0.05 - 0.02;
+    }
+    const fade = p.life < 0.1 ? p.life*10 : p.life > 0.8 ? (1-p.life)*5 : 1;
+    pCtx.beginPath();
+    pCtx.arc(p.x*w, p.y*h, p.size, 0, Math.PI*2);
+    pCtx.fillStyle = `rgba(200,160,80,${p.opacity*fade})`;
+    pCtx.fill();
+  });
+}
+
+/* ═══ RIVER CANVAS ═══ */
+const riverCanvas = document.getElementById('riverCanvas');
+const rCtx = riverCanvas.getContext('2d');
+function resizeRiver() {
+  riverCanvas.width = riverCanvas.offsetWidth;
+  riverCanvas.height = riverCanvas.offsetHeight;
+}
+resizeRiver();
+window.addEventListener('resize', resizeRiver);
+
+function drawRiver(t) {
+  const w = riverCanvas.width, h = riverCanvas.height;
+  rCtx.clearRect(0,0,w,h);
+  
+  // Multiple wave layers
+  for (let layer = 0; layer < 5; layer++) {
+    rCtx.beginPath();
+    const yBase = h * (0.35 + layer*0.12);
+    const amp = 8 + layer*4;
+    const freq = 0.008 - layer*0.001;
+    const speed = t * 0.001 + layer*0.5;
+    
+    rCtx.moveTo(0, yBase);
+    for (let x = 0; x <= w; x += 2) {
+      const y = yBase + Math.sin(x*freq + speed) * amp + Math.sin(x*freq*2.3 - speed*1.5) * amp*0.5;
+      rCtx.lineTo(x, y);
+    }
+    rCtx.lineTo(w, h);
+    rCtx.lineTo(0, h);
+    rCtx.closePath();
+    
+    const alpha = 0.08 + layer*0.05;
+    rCtx.fillStyle = `rgba(30,100,140,${alpha})`;
+    rCtx.fill();
+  }
+  
+  // Shimmer lines
+  for (let i = 0; i < 15; i++) {
+    const x = (i/15)*w + Math.sin(t*0.001 + i)*30;
+    const y = h*0.4 + Math.sin(t*0.0008 + i*0.7)*h*0.15;
+    rCtx.beginPath();
+    rCtx.moveTo(x, y);
+    rCtx.lineTo(x + 30, y + 5);
+    rCtx.strokeStyle = `rgba(150,220,255,${0.05 + Math.sin(t*0.002+i)*0.05})`;
+    rCtx.lineWidth = 1;
+    rCtx.stroke();
+  }
+}
+
+/* ═══ MAP CANVAS ═══ */
+const mapCanvas = document.getElementById('mapCanvas');
+const mCtx = mapCanvas.getContext('2d');
+
+const cities = [
+  {name:'Ur', x:0.68, y:0.62, desc:'Ancient Sumerian city-state and birthplace of Abraham. Center of the moon god Nanna\'s cult. Population: ~65,000 at peak.'},
+  {name:'Uruk', x:0.60, y:0.55, desc:'World\'s first true city (c.3500 BCE). Birthplace of writing and home of the legendary King Gilgamesh. Population reached 80,000.'},
+  {name:'Nippur', x:0.55, y:0.48, desc:'Sacred religious center of Mesopotamia. Home to the great temple of Enlil. Neutral ground respected by all rival kingdoms.'},
+  {name:'Babylon', x:0.48, y:0.38, desc:'Capital of Hammurabi\'s empire. Home of the Tower of Babel and the Hanging Gardens. Greatest city of the ancient world.'},
+  {name:'Nineveh', x:0.42, y:0.22, desc:'Capital of the Assyrian Empire at its peak. Home to Ashurbanipal\'s great library — 30,000 cuneiform tablets discovered.'},
+  {name:'Assur', x:0.44, y:0.30, desc:'Original capital and sacred city of the Assyrian Empire. Named after the god Assur, patron of the Assyrian nation.'},
+  {name:'Lagash', x:0.64, y:0.58, desc:'Rival of Umma in the world\'s first recorded war (c.2500 BCE). Famous for its detailed administrative records.'},
+  {name:'Eridu', x:0.65, y:0.70, desc:'Sumerians believed Eridu was the first city created by the gods. Archaeological evidence confirms it\'s among the oldest.'},
+];
+
+function resizeMap() {
+  const wrap = mapCanvas.parentElement;
+  mapCanvas.width = wrap.offsetWidth;
+  const h = mapCanvas.width * 0.45;
+  mapCanvas.height = h;
+  mapCanvas.style.height = h + 'px';
+}
+resizeMap();
+window.addEventListener('resize', () => { resizeMap(); drawMap(performance.now()); });
+
+let hoveredCity = null;
+let mapT = 0;
+
+function drawMap(t) {
+  mapT = t;
+  const w = mapCanvas.width, h = mapCanvas.height;
+  mCtx.clearRect(0,0,w,h);
+  
+  // Background (desert)
+  const bg = mCtx.createLinearGradient(0,0,w,h);
+  bg.addColorStop(0, '#1a1005');
+  bg.addColorStop(0.5, '#2a1808');
+  bg.addColorStop(1, '#1a1005');
+  mCtx.fillStyle = bg;
+  mCtx.fillRect(0,0,w,h);
+  
+  // Desert texture dots
+  for (let i = 0; i < 200; i++) {
+    const x = (Math.sin(i*17.3)*0.5+0.5)*w;
+    const y = (Math.sin(i*13.7)*0.5+0.5)*h;
+    mCtx.beginPath();
+    mCtx.arc(x,y,0.8,0,Math.PI*2);
+    mCtx.fillStyle = 'rgba(180,140,80,0.06)';
+    mCtx.fill();
+  }
+  
+  // Fertile crescent (green tint)
+  mCtx.beginPath();
+  mCtx.ellipse(w*0.55, h*0.45, w*0.28, h*0.35, -0.2, 0, Math.PI*2);
+  mCtx.fillStyle = 'rgba(40,80,20,0.12)';
+  mCtx.fill();
+  
+  // Mountains (north)
+  for (let i = 0; i < 8; i++) {
+    const mx = w*(0.1 + i*0.1);
+    const my = h*0.08;
+    mCtx.beginPath();
+    mCtx.moveTo(mx-20,my+20);
+    mCtx.lineTo(mx, my-15);
+    mCtx.lineTo(mx+20, my+20);
+    mCtx.fillStyle = 'rgba(100,80,60,0.4)';
+    mCtx.fill();
+  }
+  
+  // Zagros mountains (east)
+  for (let i = 0; i < 6; i++) {
+    const mx = w*0.88;
+    const my = h*(0.15 + i*0.12);
+    mCtx.beginPath();
+    mCtx.moveTo(mx-15,my+18);
+    mCtx.lineTo(mx,my-12);
+    mCtx.lineTo(mx+15,my+18);
+    mCtx.fillStyle = 'rgba(100,80,60,0.35)';
+    mCtx.fill();
+  }
+  
+  // Tigris River
+  mCtx.beginPath();
+  mCtx.moveTo(w*0.45, h*0.05);
+  mCtx.bezierCurveTo(w*0.50, h*0.25, w*0.52, h*0.45, w*0.55, h*0.65);
+  mCtx.bezierCurveTo(w*0.57, h*0.75, w*0.60, h*0.85, w*0.62, h*0.95);
+  mCtx.strokeStyle = 'rgba(42,107,138,0.7)';
+  mCtx.lineWidth = 3;
+  mCtx.stroke();
+  mCtx.lineWidth = 1.5;
+  mCtx.strokeStyle = 'rgba(80,160,200,0.3)';
+  mCtx.stroke();
+  
+  // Euphrates River
+  mCtx.beginPath();
+  mCtx.moveTo(w*0.22, h*0.05);
+  mCtx.bezierCurveTo(w*0.30, h*0.20, w*0.38, h*0.35, w*0.45, h*0.55);
+  mCtx.bezierCurveTo(w*0.52, h*0.70, w*0.57, h*0.80, w*0.63, h*0.95);
+  mCtx.strokeStyle = 'rgba(42,107,138,0.7)';
+  mCtx.lineWidth = 3;
+  mCtx.stroke();
+  mCtx.lineWidth = 1.5;
+  mCtx.strokeStyle = 'rgba(80,160,200,0.3)';
+  mCtx.stroke();
+  
+  // River labels
+  mCtx.font = `${w*0.014}px Cinzel, serif`;
+  mCtx.fillStyle = 'rgba(122,179,200,0.4)';
+  mCtx.save();
+  mCtx.translate(w*0.52, h*0.30);
+  mCtx.rotate(0.8);
+  mCtx.fillText('Tigris', 0, 0);
+  mCtx.restore();
+  mCtx.save();
+  mCtx.translate(w*0.35, h*0.38);
+  mCtx.rotate(0.8);
+  mCtx.fillText('Euphrates', 0, 0);
+  mCtx.restore();
+  
+  // Persian Gulf
+  mCtx.beginPath();
+  mCtx.ellipse(w*0.70, h*0.90, w*0.18, h*0.09, 0, 0, Math.PI*2);
+  mCtx.fillStyle = 'rgba(30,80,120,0.5)';
+  mCtx.fill();
+  mCtx.font = `${w*0.012}px Cinzel, serif`;
+  mCtx.fillStyle = 'rgba(122,179,200,0.35)';
+  mCtx.textAlign = 'center';
+  mCtx.fillText('Persian Gulf', w*0.70, h*0.90);
+  
+  // Mediterranean
+  mCtx.beginPath();
+  mCtx.ellipse(w*0.05, h*0.35, w*0.08, h*0.20, 0, 0, Math.PI*2);
+  mCtx.fillStyle = 'rgba(30,80,120,0.4)';
+  mCtx.fill();
+  mCtx.font = `${w*0.009}px Cinzel, serif`;
+  mCtx.fillStyle = 'rgba(122,179,200,0.3)';
+  mCtx.save();
+  mCtx.translate(w*0.05, h*0.35);
+  mCtx.rotate(-0.3);
+  mCtx.fillText('Mediterranean', 0, 0);
+  mCtx.restore();
+  
+  mCtx.textAlign = 'left';
+  
+  // Cities
+  cities.forEach(city => {
+    const cx = city.x * w, cy = city.y * h;
+    const isHover = hoveredCity === city;
+    const pulse = Math.sin(t*0.003 + city.x*10) * 0.3 + 0.7;
+    
+    // Glow
+    const grd = mCtx.createRadialGradient(cx, cy, 0, cx, cy, isHover ? 30 : 20);
+    grd.addColorStop(0, `rgba(212,160,23,${isHover ? 0.5 : 0.2 * pulse})`);
+    grd.addColorStop(1, 'transparent');
+    mCtx.fillStyle = grd;
+    mCtx.fillRect(cx-30, cy-30, 60, 60);
+    
+    // Dot
+    mCtx.beginPath();
+    mCtx.arc(cx, cy, isHover ? 7 : 5, 0, Math.PI*2);
+    mCtx.fillStyle = isHover ? '#ffd700' : `rgba(212,160,23,${pulse})`;
+    mCtx.fill();
+    mCtx.strokeStyle = 'rgba(0,0,0,0.5)';
+    mCtx.lineWidth = 1;
+    mCtx.stroke();
+    
+    // Label
+    mCtx.font = `${isHover ? w*0.016 : w*0.013}px Cinzel, serif`;
+    mCtx.fillStyle = isHover ? '#ffd700' : 'rgba(232,201,138,0.7)';
+    mCtx.fillText(city.name, cx + 10, cy + 4);
+  });
+}
+
+// Map hover detection
+mapCanvas.addEventListener('mousemove', e => {
+  const rect = mapCanvas.getBoundingClientRect();
+  const mx = (e.clientX - rect.left) * (mapCanvas.width / rect.width);
+  const my = (e.clientY - rect.top) * (mapCanvas.height / rect.height);
+  const tooltip = document.getElementById('mapTooltip');
+  
+  hoveredCity = null;
+  cities.forEach(city => {
+    const cx = city.x * mapCanvas.width, cy = city.y * mapCanvas.height;
+    if (Math.hypot(mx-cx, my-cy) < 15) hoveredCity = city;
+  });
+  
+  if (hoveredCity) {
+    document.getElementById('tooltipName').textContent = hoveredCity.name;
+    document.getElementById('tooltipDesc').textContent = hoveredCity.desc;
+    tooltip.style.opacity = '1';
+    tooltip.style.left = Math.min(e.offsetX + 15, mapCanvas.offsetWidth - 240) + 'px';
+    tooltip.style.top = Math.max(e.offsetY - 60, 0) + 'px';
+    mapCanvas.style.cursor = 'pointer';
+  } else {
+    tooltip.style.opacity = '0';
+    mapCanvas.style.cursor = 'crosshair';
+  }
+});
+mapCanvas.addEventListener('mouseleave', () => {
+  hoveredCity = null;
+  document.getElementById('mapTooltip').style.opacity = '0';
+});
+
+/* ═══ CLOCK ═══ */
+const timeEvents = [
+  {hour:5, label:'Dawn', period:'5:00 AM'},
+  {hour:7, label:'Morning', period:'7:00 AM'},
+  {hour:9, label:'Morning', period:'9:00 AM'},
+  {hour:12, label:'Midday', period:'12:00 PM'},
+  {hour:15, label:'Afternoon', period:'3:00 PM'},
+  {hour:19, label:'Evening', period:'7:00 PM'}
+];
+
+function setClockTime(el, hour, label, period) {
+  document.querySelectorAll('.time-event').forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('clockTimeDisplay').textContent = label;
+  document.getElementById('clockPeriod').textContent = period;
+  
+  // Animate sun position
+  const angle = ((hour - 6) / 12) * Math.PI - Math.PI/2;
+  const radius = 90;
+  const sun = document.getElementById('clockSun');
+  const x = Math.cos(angle) * radius;
+  const y = Math.sin(angle) * radius;
+  sun.style.transform = `translate(${x - 15}px, ${y - 15}px)`;
+}
+
+// Init clock
+setClockTime(document.querySelector('.time-event'), 5, 'Dawn', '5:00 AM');
+
+/* ═══ SCROLL REVEAL ═══ */
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => {
+  revealObserver.observe(el);
+});
+
+/* ═══ ACTIVE NAV ═══ */
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-link');
+const navObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const link = document.querySelector(`.nav-link[href="#${entry.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { threshold: 0.4 });
+sections.forEach(s => navObserver.observe(s));
+
+/* ═══ PARALLAX ═══ */
+window.addEventListener('scroll', () => {
+  const sy = window.scrollY;
+  const hero = document.querySelector('.hero');
+  if (hero) {
+    const heroContent = document.getElementById('heroContent');
+    if (heroContent) heroContent.style.transform = `translateY(${sy * 0.3}px)`;
+    const mountains = document.querySelector('.hero-mountains');
+    if (mountains) mountains.style.transform = `translateY(${sy * 0.1}px)`;
+    const city = document.querySelector('.hero-city');
+    if (city) city.style.transform = `translateY(${sy * 0.05}px)`;
+  }
+});
+
+/* ═══ ANIMATION LOOP ═══ */
+function animate(t) {
+  drawSky(t);
+  drawParticles();
+  drawRiver(t);
+  drawMap(t);
+  requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+
+/* ═══ STAGGER REVEAL DELAYS ═══ */
+document.querySelectorAll('.food-card').forEach((el, i) => {
+  el.style.transitionDelay = `${i * 0.05}s`;
+});
+document.querySelectorAll('.god-tile').forEach((el, i) => {
+  el.style.transitionDelay = `${i * 0.08}s`;
+});
+document.querySelectorAll('.leisure-card').forEach((el, i) => {
+  el.style.transitionDelay = `${i * 0.06}s`;
+});
+</script>
+</body>
+</html>
